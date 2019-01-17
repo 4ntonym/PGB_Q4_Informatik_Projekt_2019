@@ -1,39 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Asteroid : MonoBehaviour {
+//Oberklasse für weitere Asteroiden-Typen
+
+public class Asteroid : MonoBehaviour { 
 
     public float rotationSpeed;
     public float speed;
-    public Transform player;
-    
-    void Start() {
-        GetComponent<Rigidbody>().angularVelocity = Random.insideUnitSphere * rotationSpeed;   // zufällige Rotation
-        //GetComponent<Rigidbody>().velocity = Random.insideUnitSphere * speed; // Bewegung mit fester Geschwindigkeit in zufällige Richtung
-        //GetComponent<Rigidbody>().velocity = Random.insideUnitSphere * Random.value * 10; // Bewegung mit zufälliger Geschwindigkeitsvektor in zufällige Richtung
-    }
+    public Rigidbody rb;
+    new public Transform transform;
 
-    void FixedUpdate() {
-        GetComponent<Rigidbody>().velocity = (player.position - GetComponent<Rigidbody>().position) *(speed/5f); // Spieler verfolgen, Geschwindigkeit anpassbar
-    }
 
-    // differenzierte Kollisionsabfragen, da sonst Objekte sofort wegen einer Kollision mit der Begrenzung zerstört werden -> Tags bei Objekten setzen
+    public void Start() {
+        rb = GetComponent<Rigidbody>();
+        rb.angularVelocity = Random.insideUnitSphere * rotationSpeed * Time.deltaTime; //Geschwindigkeit für Zeitänderung statt Framerate
+    }
 
     void OnTriggerEnter(Collider other) { // Kollisions mit anderen Objekten 
-        if (other.tag == "Shot") { 
-           // Instantiate(explosion, transform.position, transform.rotation); // Explosion erzeugen
-           Destroy(other.gameObject);
-           Destroy(gameObject);
-        } 
-        if (other.tag == "Player") {
-           //Instantiate(playerExplosion, other.transform.position, other.transform.rotation);
-           //gameController.GameOver();
-             Destroy(other.gameObject);
-             Destroy(gameObject);
-        }
-        if (other.tag == "Enemy") {
-            GetComponent<Rigidbody>().velocity = GetComponent<Rigidbody>().velocity * -1f; // Abprallen des Asteroiden in Richtung, aus der er gekommen ist
-        }
+        
+    }
 
     void OnTriggerExit(Collider other) { // Verlassen des Spielraums
         if (other.tag == "Boundary"){ // -> Begrenzungsobjekt muss entsprechenden Tag bekommen
